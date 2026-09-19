@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: KiranaAI - Serverless AI Agent for Indian Kirana Udhaar Bookkeeping (Bedrock
+  + Strands Agents + DynamoDB + Lambda)
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.11
+Resources:
+  KiranaUdhaarTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: KiranaAI_Udhaar
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: PK
+        AttributeType: S
+      - AttributeName: SK
+        AttributeType: S
+      KeySchema:
+      - AttributeName: PK
+        KeyType: HASH
+      - AttributeName: SK
+        KeyType: RANGE
+  KiranaAIFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: KiranaAIFunction
+      Handler: handler.lambda_handler
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME:
+            Ref: KiranaUdhaarTable
+          BEDROCK_MODEL_ID: anthropic.claude-3-5-sonnet-20241022-v2:0
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: KiranaUdhaarTable
+      - Statement:
+        - Effect: Allow
+          Action:
+          - bedrock:InvokeModel
+          - bedrock:InvokeModelWithResponseStream
+          Resource: '*'
+      Events:
+        ApiEvent:
+          Type: HttpApi
+        DailyAutonomousReminder:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 day)
+            Description: Autonomous EventBridge trigger for kirana customer udhaar
+              reminders
+            Enabled: true
+    Metadata:
+      SamResourceId: KiranaAIFunction
+Outputs:
+  KiranaAIApiEndpoint:
+    Description: HTTP API endpoint URL for KiranaAI
+    Value:
+      Fn::Sub: https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com

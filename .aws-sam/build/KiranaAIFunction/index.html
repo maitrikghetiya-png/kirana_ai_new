@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KiranaAI — Smart Udhaar Khata Agent</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-logo">🏪</div>
+        <div class="brand-text">
+          <div class="brand-title">
+            KiranaAI <span class="tag">किराना मुनीम</span>
+          </div>
+          <div class="brand-subtitle">AI Udhaar & Ledger Agent • Bedrock & DynamoDB</div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div class="badge-status">
+          <span class="pulse-dot"></span>
+          <span id="agent-status-text">Online</span>
+        </div>
+        <div class="balance-summary-pill" id="nav-balance-pill" title="Total outstanding ledger balance">
+          <span class="pill-label">Total Dues:</span>
+          <strong id="nav-total-amount">₹0</strong>
+        </div>
+        <button class="btn-autonomous-trigger" id="auto-reminder-btn" title="Autonomous EventBridge Reminder Trigger (Checks DynamoDB & Sends Reminders Without Chat)">
+          <span class="btn-icon-flash">⚡</span>
+          <span>Run Automatic Reminder</span>
+        </button>
+        <button class="btn-reset" id="reset-btn" title="Reset all demo records to ₹0">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          <span>Reset Demo</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Visual Demo Flow Stepper (Prominently displayed) -->
+  <section class="demo-flow-section">
+    <div class="demo-flow-container">
+      <div class="demo-flow-header">
+        <span class="flow-title">⚡ GUIDED DEMO FLOW</span>
+        <span class="flow-sub">Click any step to test the AI agent flow:</span>
+      </div>
+      <div class="steps-track">
+        <!-- Step 1 -->
+        <button class="step-card active" id="step-1" data-step="1" data-query="Ramesh liya 500 doodh">
+          <div class="step-badge">Step 1</div>
+          <div class="step-name">Add Credit</div>
+          <div class="step-query">"Ramesh liya 500 doodh"</div>
+          <div class="step-tool"><code>add_transaction</code></div>
+        </button>
+
+        <div class="flow-arrow">→</div>
+
+        <!-- Step 2 -->
+        <button class="step-card" id="step-2" data-step="2" data-query="Kaun paisa dena hai?">
+          <div class="step-badge">Step 2</div>
+          <div class="step-name">Ask Dues</div>
+          <div class="step-query">"Kaun paisa dena hai?"</div>
+          <div class="step-tool"><code>get_dues</code></div>
+        </button>
+
+        <div class="flow-arrow">→</div>
+
+        <!-- Step 3 -->
+        <button class="step-card" id="step-3" data-step="3" data-query="Ramesh ne 300 de diye">
+          <div class="step-badge">Step 3</div>
+          <div class="step-name">Record Payment</div>
+          <div class="step-query">"Ramesh ne 300 de diye"</div>
+          <div class="step-tool"><code>record_payment</code></div>
+        </button>
+
+        <div class="flow-arrow">→</div>
+
+        <!-- Step 4 -->
+        <button class="step-card" id="step-4" data-step="4" data-query="Ramesh ko reminder bhejo">
+          <div class="step-badge">Step 4</div>
+          <div class="step-name">Send Reminder</div>
+          <div class="step-query">"Ramesh ko reminder bhejo"</div>
+          <div class="step-tool"><code>send_reminder</code></div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Work Area: Chat + Live Ledger -->
+  <main class="main-layout">
+    <div class="layout-grid">
+      <!-- Left Column: Chat Conversation -->
+      <section class="chat-pane">
+        <div class="chat-header-bar">
+          <div class="chat-header-title">
+            <span>💬 Shopkeeper Chat</span>
+            <small>🎤 Speak or type in Hinglish / Hindi / English</small>
+          </div>
+          <div class="mobile-ledger-trigger">
+            <button class="btn-toggle-ledger" id="mobile-ledger-btn">
+              <span>📖 View Khata</span>
+              <strong id="mobile-khata-bal">₹0</strong>
+            </button>
+          </div>
+        </div>
+
+        <!-- Chat Feed -->
+        <div class="chat-messages-container" id="chat-messages">
+          <div class="message-row bot">
+            <div class="message-avatar">🏪</div>
+            <div class="message-bubble">
+              <div class="bubble-author">KiranaAI Munim</div>
+              <p><strong>Namaste Sethji! 🙏</strong> Main aapka digital munim hoon.</p>
+              <p>Customer udhaar aur hisaab manage karne ke liye upar diye gaye <strong>Demo Flow</strong> steps dabayein, ya neeche seedhe likhein:</p>
+              <ul class="intro-shortcuts">
+                <li><code>"Ramesh liya 500 doodh"</code> &rarr; ₹500 udhaar darj karein</li>
+                <li><code>"Kaun paisa dena hai?"</code> &rarr; Baki khata check karein</li>
+                <li><code>"Ramesh ne 300 de diye"</code> &rarr; ₹300 jama darj karein</li>
+                <li><code>"Ramesh ko reminder bhejo"</code> &rarr; Reminder message banayein</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-wrapper">
+          <form id="chat-form" class="chat-form">
+            <div class="input-container">
+              <input 
+                type="text" 
+                id="user-input" 
+                class="main-input" 
+                placeholder="Jaise: Ramesh liya 500 doodh ya Kaun paisa dena hai..." 
+                autocomplete="off"
+                required
+              />
+            </div>
+            <button type="button" class="btn-mic" id="mic-btn" title="Voice input — speak in Hindi/Hinglish">
+              <svg id="mic-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            </button>
+            <button type="submit" class="btn-send-message" id="send-btn">
+              <span>Bhejo</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Right Column: Live Udhaar Ledger -->
+      <aside class="ledger-pane" id="ledger-pane">
+        <div class="ledger-card">
+          <div class="ledger-card-header">
+            <div class="ledger-title-group">
+              <h3>📖 Udhaar Khata</h3>
+              <span class="ledger-subtitle">Persistent DynamoDB Store</span>
+            </div>
+            <div class="live-tag">● Live Sync</div>
+          </div>
+
+          <!-- Total Outstanding Metric -->
+          <div class="total-metric-box">
+            <div class="metric-label">Kul Baki (Total Outstanding)</div>
+            <div class="metric-value" id="ledger-total-amount">₹0</div>
+            <div class="metric-sub" id="ledger-customer-count">0 customers with dues</div>
+          </div>
+
+          <!-- Customer Ledger Table -->
+          <div class="customers-section">
+            <div class="customers-table-head">
+              <span>Customer</span>
+              <span>Balance Due</span>
+            </div>
+            <div class="customers-list" id="customers-list">
+              <div class="empty-ledger-state">
+                <div class="empty-icon">📝</div>
+                <p>Khata bilkul saaf hai!</p>
+                <small>Step 1 dabakar "Ramesh liya 500 doodh" test karein.</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tools Active Box -->
+          <div class="tools-audit-box">
+            <div class="tools-audit-title">⚙️ Active Strands Tools:</div>
+            <div class="tools-badge-list">
+              <span class="tool-chip">add_transaction</span>
+              <span class="tool-chip">get_dues</span>
+              <span class="tool-chip">record_payment</span>
+              <span class="tool-chip">send_reminder</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

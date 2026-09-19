@@ -1,0 +1,49 @@
+{
+  "customers": {
+    "Ramesh": {
+      "customer_name": "Ramesh",
+      "balance": 550.0,
+      "updated_at": "2026-09-18T18:17:18.875624",
+      "phone": "9876543210"
+    },
+    "Shubham": {
+      "customer_name": "Shubham",
+      "balance": 300.0,
+      "updated_at": "2026-09-18T18:15:55.762338"
+    }
+  },
+  "transactions": [
+    {
+      "id": "TX#1789754523218",
+      "customer_name": "Ramesh",
+      "type": "CREDIT",
+      "amount": 350.0,
+      "description": "doodh",
+      "timestamp": "2026-09-18T18:02:03.218354"
+    },
+    {
+      "id": "TX#1789755355762",
+      "customer_name": "Shubham",
+      "type": "CREDIT",
+      "amount": 300.0,
+      "description": "Credit purchase",
+      "timestamp": "2026-09-18T18:15:55.762338"
+    },
+    {
+      "id": "TX#1789755429459",
+      "customer_name": "Ramesh",
+      "type": "PAYMENT",
+      "amount": 300.0,
+      "description": "Payment received",
+      "timestamp": "2026-09-18T18:17:09.459182"
+    },
+    {
+      "id": "TX#1789755438875",
+      "customer_name": "Ramesh",
+      "type": "CREDIT",
+      "amount": 500.0,
+      "description": "doodh",
+      "timestamp": "2026-09-18T18:17:18.875624"
+    }
+  ]
+}
